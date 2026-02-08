@@ -53,6 +53,17 @@ export function formatTimeSlot(timeSlot: string): string {
   return timeSlot
 }
 
+export const RELATIONSHIPS = ["Pai", "Mãe", "Avô", "Avó", "Tio(a)", "Responsável legal", "Outro"]
+
+export function applyPhoneMask(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11)
+  if (digits.length <= 2) return digits.length ? `(${digits}` : ""
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+}
+
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "")
   if (digits.length === 11) {
