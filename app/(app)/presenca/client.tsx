@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { PageHeader } from "@/components/page-header"
-import { CLASSROOMS, getClassroomByAge, getClassroomLabel } from "@/lib/classrooms"
+import { CLASSROOMS, getClassroomByAge, getClassroomLabel, RELATIONSHIPS, applyPhoneMask } from "@/lib/classrooms"
 import { registerAttendance, registerVisitor, getAttendanceByMonth, getRegisteredChildIds } from "./actions"
 import { generateAttendancePDF } from "@/lib/pdf"
 import { toast } from "sonner"
@@ -48,6 +48,9 @@ export function PresencaPageClient({ children, servants }: PresencaPageClientPro
   const [selectedChildren, setSelectedChildren] = useState<Set<string>>(new Set())
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set())
   const [reportMonth, setReportMonth] = useState(format(new Date(), "yyyy-MM"))
+  const [visitorPhone, setVisitorPhone] = useState("")
+  const [visitorRelationship, setVisitorRelationship] = useState("")
+  const [visitorCustomRelationship, setVisitorCustomRelationship] = useState("")
 
   // Get current or next Sunday
   const today = new Date()
@@ -133,6 +136,11 @@ export function PresencaPageClient({ children, servants }: PresencaPageClientPro
   function handleRegisterVisitor(formData: FormData) {
     formData.set("service_date", serviceDate)
     formData.set("time_slot", timeSlot)
+    formData.set("visitor_phone", visitorPhone.replace(/\D/g, ""))
+    const finalRelationship = visitorRelationship === "Outro" ? visitorCustomRelationship : visitorRelationship
+    if (finalRelationship) {
+      formData.set("visitor_guardian_relationship", finalRelationship)
+    }
 
     startTransition(async () => {
       const result = await registerVisitor(formData)
@@ -141,6 +149,9 @@ export function PresencaPageClient({ children, servants }: PresencaPageClientPro
       } else {
         toast.success("Visitante registrado!")
         setShowVisitorForm(false)
+        setVisitorPhone("")
+        setVisitorRelationship("")
+        setVisitorCustomRelationship("")
       }
     })
   }
@@ -343,8 +354,36 @@ export function PresencaPageClient({ children, servants }: PresencaPageClientPro
               <Input id="visitor_guardian_name" name="visitor_guardian_name" placeholder="Nome do responsável" />
             </div>
             <div className="flex flex-col gap-2">
+              <Label htmlFor="visitor_guardian_relationship">Parentesco</Label>
+              <Select value={visitorRelationship} onValueChange={(v) => { setVisitorRelationship(v); if (v !== "Outro") setVisitorCustomRelationship("") }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o parentesco" />
+                </SelectTrigger>
+                <SelectContent>
+                  {RELATIONSHIPS.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {visitorRelationship === "Outro" && (
+                <Input
+                  placeholder="Digite o parentesco"
+                  value={visitorCustomRelationship}
+                  onChange={(e) => setVisitorCustomRelationship(e.target.value)}
+                />
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="visitor_phone">Telefone</Label>
-              <Input id="visitor_phone" name="visitor_phone" type="tel" placeholder="(00) 00000-0000" />
+              <Input
+                id="visitor_phone"
+                type="tel"
+                placeholder="(00) 00000-0000"
+                value={visitorPhone}
+                onChange={(e) => setVisitorPhone(applyPhoneMask(e.target.value))}
+              />
             </div>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Registrando..." : "Registrar Visitante"}
