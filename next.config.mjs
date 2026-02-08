@@ -6,6 +6,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['kids.icvcg.com.br'],
+    },
+  },
 }
 
 export default nextConfig
