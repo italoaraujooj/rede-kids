@@ -13,6 +13,7 @@ export async function createChild(formData: FormData) {
   const phone = formData.get("phone") as string
 
   if (!name || !birthDate || !guardianName || !guardianRelationship || !phone) {
+    console.warn("[createChild] Campos obrigatórios ausentes:", { name: !!name, birthDate: !!birthDate, guardianName: !!guardianName, guardianRelationship: !!guardianRelationship, phone: !!phone })
     return { error: "Todos os campos são obrigatórios" }
   }
 
@@ -25,6 +26,7 @@ export async function createChild(formData: FormData) {
   })
 
   if (error) {
+    console.error("[createChild] Erro ao inserir no Supabase:", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao cadastrar criança" }
   }
 
@@ -42,6 +44,7 @@ export async function updateChild(id: string, formData: FormData) {
   const phone = formData.get("phone") as string
 
   if (!name || !birthDate || !guardianName || !guardianRelationship || !phone) {
+    console.warn("[updateChild] Campos obrigatórios ausentes para id:", id)
     return { error: "Todos os campos são obrigatórios" }
   }
 
@@ -57,6 +60,7 @@ export async function updateChild(id: string, formData: FormData) {
     .eq("id", id)
 
   if (error) {
+    console.error("[updateChild] Erro ao atualizar no Supabase (id:", id, "):", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao atualizar criança" }
   }
 
@@ -73,6 +77,7 @@ export async function deactivateChild(id: string) {
     .eq("id", id)
 
   if (error) {
+    console.error("[deactivateChild] Erro ao desativar no Supabase (id:", id, "):", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao remover criança" }
   }
 

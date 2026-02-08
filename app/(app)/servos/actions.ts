@@ -10,6 +10,7 @@ export async function createServant(formData: FormData) {
   const phone = formData.get("phone") as string
 
   if (!name) {
+    console.warn("[createServant] Nome não informado")
     return { error: "Nome é obrigatório" }
   }
 
@@ -19,6 +20,7 @@ export async function createServant(formData: FormData) {
   })
 
   if (error) {
+    console.error("[createServant] Erro ao inserir no Supabase:", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao cadastrar servo" }
   }
 
@@ -33,6 +35,7 @@ export async function updateServant(id: string, formData: FormData) {
   const phone = formData.get("phone") as string
 
   if (!name) {
+    console.warn("[updateServant] Nome não informado para id:", id)
     return { error: "Nome é obrigatório" }
   }
 
@@ -45,6 +48,7 @@ export async function updateServant(id: string, formData: FormData) {
     .eq("id", id)
 
   if (error) {
+    console.error("[updateServant] Erro ao atualizar no Supabase (id:", id, "):", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao atualizar servo" }
   }
 
@@ -61,6 +65,7 @@ export async function deactivateServant(id: string) {
     .eq("id", id)
 
   if (error) {
+    console.error("[deactivateServant] Erro ao desativar no Supabase (id:", id, "):", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao remover servo" }
   }
 
@@ -78,6 +83,7 @@ export async function assignServantToService(formData: FormData) {
   const classroom = formData.get("classroom") as string
 
   if (!serviceDate || !timeSlot || !servantId || !role || !classroom) {
+    console.warn("[assignServantToService] Campos obrigatórios ausentes:", { serviceDate: !!serviceDate, timeSlot: !!timeSlot, servantId: !!servantId, role: !!role, classroom: !!classroom })
     return { error: "Todos os campos são obrigatórios" }
   }
 
@@ -97,6 +103,7 @@ export async function assignServantToService(formData: FormData) {
       .single()
 
     if (serviceError || !newService) {
+      console.error("[assignServantToService] Erro ao criar culto no Supabase (data:", serviceDate, "turno:", timeSlot, "):", serviceError?.message, "| Código:", serviceError?.code, "| Detalhes:", serviceError?.details)
       return { error: "Erro ao criar culto" }
     }
     service = newService
@@ -110,6 +117,7 @@ export async function assignServantToService(formData: FormData) {
   })
 
   if (error) {
+    console.error("[assignServantToService] Erro ao escalar servo no Supabase:", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao escalar servo" }
   }
 
@@ -123,6 +131,7 @@ export async function removeServantFromService(id: string) {
   const { error } = await supabase.from("service_servants").delete().eq("id", id)
 
   if (error) {
+    console.error("[removeServantFromService] Erro ao remover escalação no Supabase (id:", id, "):", error.message, "| Código:", error.code, "| Detalhes:", error.details)
     return { error: "Erro ao remover escalação" }
   }
 
