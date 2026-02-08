@@ -92,6 +92,7 @@ export async function registerVisitor(formData: FormData) {
   const visitorName = formData.get("visitor_name") as string
   const visitorBirthDate = formData.get("visitor_birth_date") as string
   const visitorGuardianName = formData.get("visitor_guardian_name") as string
+  const visitorGuardianRelationship = formData.get("visitor_guardian_relationship") as string
   const visitorPhone = formData.get("visitor_phone") as string
 
   if (!serviceDate || !timeSlot || !visitorName || !visitorBirthDate) {
@@ -116,6 +117,7 @@ export async function registerVisitor(formData: FormData) {
     visitor_name: visitorName.trim(),
     visitor_birth_date: visitorBirthDate,
     visitor_guardian_name: visitorGuardianName?.trim() || null,
+    visitor_guardian_relationship: visitorGuardianRelationship?.trim() || null,
     visitor_phone: visitorPhone?.trim() || null,
     classroom,
   })

@@ -10,3 +10,7 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
